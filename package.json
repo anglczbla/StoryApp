@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "leaflet": "^1.9.4"
+  },
+  "name": "storyapp",
+  "version": "1.0.0",
+  "description": "Story App is a web app for viewing, adding, and exploring stories. Users can capture photos, select locations on a map, and view story details. It follows SPA architecture with hash routing and MVP pattern.",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run start"
+  },
+  "author": "",
+  "license": "ISC"
+}

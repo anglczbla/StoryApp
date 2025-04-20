@@ -1,4 +1,6 @@
-import { addStory } from "../model/story-model.js";
+import { addStory } from "../models/story-model.js";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 const AddStoryView = {
   async render() {
@@ -35,7 +37,7 @@ const AddStoryView = {
       const lat = document.getElementById("lat").value;
       const lon = document.getElementById("lon").value;
 
-      const result = await addStory({ description, photo, lat, lon });
+      await addStory({ description, photo, lat, lon });
       alert("Story ditambahkan! Redirect ke home...");
       window.location.hash = "";
     });
