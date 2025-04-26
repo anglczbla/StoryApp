@@ -1,27 +1,2 @@
-# STUDENT.txt
-
-# Informasi Token dan API
-API Base URL: https://story-api.dicoding.dev/v1
-Authorization Token: Bearer <TOKEN_ANDA>
-
-# Catatan
-- Token ini digunakan dalam semua request API.
-- Gunakan Leaflet.js untuk peta.
-- Pastikan koneksi internet aktif agar tile peta dan API berjalan lancar.
-- Marker peta akan muncul berdasarkan klik pada peta.
-
-# Aksesibilitas
-- Skip link tersedia di atas halaman.
-- Semua elemen form sudah diberi label yang sesuai.
-- Gambar memiliki alt text untuk screen reader.
-
-# View Transition API
-- View Transition API digunakan untuk transisi halaman yang halus.
-- Pastikan browser yang digunakan mendukung fitur ini (Chrome 111+, Firefox 125+).
-
-# Petunjuk Tambahan
-- Untuk submit cerita baru, foto diambil langsung dari kamera perangkat.
-- Pastikan koordinat lat/lon diambil dari peta melalui klik.
-
-# Tambahan
-- Semua kebutuhan project SPA, hash routing, MVP, dan form sudah terpenuhi.
+APP_URL=<url_aplikasi>
+MAP_SERVICE_API_KEY=<api_key>
