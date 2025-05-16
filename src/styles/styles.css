@@ -524,7 +524,7 @@ header {
 .report-detail__header {
   padding-block: 80px;
   min-height: 600px;
-  background-image: url('C:\storyapp\StoryApp\src\public\images\orange-background.jpeg');
+  background-image:url('../../public/images/orange-background.jpeg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: top;
