@@ -14,18 +14,18 @@ export default class LoginPage {
           <form id="login-form" class="login-form">
             <div class="form-control">
               <label for="email-input" class="login-form__email-title">Email</label>
-
               <div class="login-form__title-container">
-                <input id="email-input" type="email" name="email" placeholder="Contoh: nama@email.com">
+                <input id="email-input" type="email" name="email" placeholder="Contoh: nama@email.com" required>
               </div>
             </div>
+
             <div class="form-control">
               <label for="password-input" class="login-form__password-title">Password</label>
-
               <div class="login-form__title-container">
-                <input id="password-input" type="password" name="password" placeholder="Masukkan password Anda">
+                <input id="password-input" type="password" name="password" placeholder="Masukkan password Anda" required>
               </div>
             </div>
+
             <div class="form-buttons login-form__form-buttons">
               <div id="submit-button-container">
                 <button class="btn" type="submit">Masuk</button>
@@ -52,23 +52,21 @@ export default class LoginPage {
     document.getElementById('login-form').addEventListener('submit', async (event) => {
       event.preventDefault();
 
-      const data = {
-        email: document.getElementById('email-input').value,
-        password: document.getElementById('password-input').value,
-      };
-      await this.#presenter.getLogin(data);
+      const email = document.getElementById('email-input').value;
+      const password = document.getElementById('password-input').value;
+
+      await this.#presenter.getLogin({ email, password });
     });
   }
 
-  loginSuccessfully(message) {
-    console.log(message);
-
-    // Redirect
-    location.hash = '/';
+  loginSuccessfully(message, data) {
+    alert(message);
+    console.log('Login berhasil:', data);
+    location.hash = '/'; // Arahkan ke halaman utama atau dashboard
   }
 
   loginFailed(message) {
-    alert(message);
+    alert(`Login gagal: ${message}`);
   }
 
   showSubmitLoadingButton() {
