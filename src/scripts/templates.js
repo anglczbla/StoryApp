@@ -1,4 +1,4 @@
-import { showFormattedDate } from './utils';
+import { showFormattedDate } from "./utils";
 
 export function generateLoaderTemplate() {
   return `
@@ -48,7 +48,9 @@ export function generateReportsListErrorTemplate(message) {
   return `
     <div id="reports-list-error" class="reports-list__error">
       <h2>Terjadi kesalahan pengambilan daftar laporan</h2>
-      <p>${message ? message : 'Gunakan jaringan lain atau laporkan error ini.'}</p>
+      <p>${
+        message ? message : "Gunakan jaringan lain atau laporkan error ini."
+      }</p>
     </div>
   `;
 }
@@ -57,7 +59,9 @@ export function generateReportDetailErrorTemplate(message) {
   return `
     <div id="reports-detail-error" class="reports-detail__error">
       <h2>Terjadi kesalahan pengambilan detail laporan</h2>
-      <p>${message ? message : 'Gunakan jaringan lain atau laporkan error ini.'}</p>
+      <p>${
+        message ? message : "Gunakan jaringan lain atau laporkan error ini."
+      }</p>
     </div>
   `;
 }
@@ -75,7 +79,9 @@ export function generateCommentsListErrorTemplate(message) {
   return `
     <div id="report-detail-comments-list-error" class="report-detail__comments-list__error">
       <h2>Terjadi kesalahan pengambilan daftar komentar</h2>
-      <p>${message ? message : 'Gunakan jaringan lain atau laporkan error ini.'}</p>
+      <p>${
+        message ? message : "Gunakan jaringan lain atau laporkan error ini."
+      }</p>
     </div>
   `;
 }
@@ -84,32 +90,47 @@ export function generateReportItemTemplate({
   id,
   title,
   description,
-  evidenceImages,
+  evidenceImages = [], // default ke array kosong
   reporterName,
   createdAt,
-  location,
+  location = {}, // default ke objek kosong
 }) {
+  // Jika evidenceImages kosong, pakai gambar default
+  const firstImage =
+    evidenceImages.length > 0 ? evidenceImages[0] : "default-image.jpg";
+
+  // Format lokasi sebagai string, gabungkan nilai dengan koma
+  const locationText =
+    Object.values(location).length > 0
+      ? Object.values(location).join(", ")
+      : "Lokasi tidak tersedia";
+
+  // Fungsi showFormattedDate diasumsikan sudah ada di scope
+  const formattedDate = createdAt
+    ? showFormattedDate(createdAt, "id-ID")
+    : "Tanggal tidak tersedia";
+
   return `
     <div tabindex="0" class="report-item" data-reportid="${id}">
-      <img class="report-item__image" src="${evidenceImages[0]}" alt="${title}">
+      <img class="report-item__image" src="${firstImage}" alt="${title}">
       <div class="report-item__body">
         <div class="report-item__main">
           <h2 id="report-title" class="report-item__title">${title}</h2>
           <div class="report-item__more-info">
             <div class="report-item__createdat">
-              <i class="fas fa-calendar-alt"></i> ${showFormattedDate(createdAt, 'id-ID')}
+              <i class="fas fa-calendar-alt"></i> ${formattedDate}
             </div>
             <div class="report-item__location">
-              <i class="fas fa-map"></i> ${Object.values(location)}
+              <i class="fas fa-map"></i> ${locationText}
             </div>
           </div>
         </div>
         <div id="report-description" class="report-item__description">
-          ${description}
+          ${description || "Deskripsi tidak tersedia"}
         </div>
         <div class="report-item__more-info">
           <div class="report-item__author">
-            Dilaporkan oleh: ${reporterName}
+            Dilaporkan oleh: ${reporterName || "Anonim"}
           </div>
         </div>
         <a class="btn report-item__read-more" href="#/reports/${id}">
@@ -139,22 +160,22 @@ export function generateDamageLevelSevereTemplate() {
 }
 
 export function generateDamageLevelBadge(damageLevel) {
-  if (damageLevel === 'minor') {
+  if (damageLevel === "minor") {
     return generateDamageLevelMinorTemplate();
   }
 
-  if (damageLevel === 'moderate') {
+  if (damageLevel === "moderate") {
     return generateDamageLevelModerateTemplate();
   }
 
-  if (damageLevel === 'severe') {
+  if (damageLevel === "severe") {
     return generateDamageLevelSevereTemplate();
   }
 
-  return '';
+  return "";
 }
 
-export function generateReportDetailImageTemplate(imageUrl = null, alt = '') {
+export function generateReportDetailImageTemplate(imageUrl = null, alt = "") {
   if (!imageUrl) {
     return `
       <img class="report-detail__image" src="images/placeholder-image.jpg" alt="Placeholder Image">
@@ -166,7 +187,11 @@ export function generateReportDetailImageTemplate(imageUrl = null, alt = '') {
   `;
 }
 
-export function generateReportCommentItemTemplate({ photoUrlCommenter, nameCommenter, body }) {
+export function generateReportCommentItemTemplate({
+  photoUrlCommenter,
+  nameCommenter,
+  body,
+}) {
   return `
     <article tabindex="0" class="report-detail__comment-item">
       <img
@@ -194,12 +219,14 @@ export function generateReportDetailTemplate({
   reporterName,
   createdAt,
 }) {
-  const createdAtFormatted = showFormattedDate(createdAt, 'id-ID');
+  const createdAtFormatted = showFormattedDate(createdAt, "id-ID");
   const damageLevelBadge = generateDamageLevelBadge(damageLevel);
   const imagesHtml = evidenceImages.reduce(
     (accumulator, evidenceImage) =>
-      accumulator.concat(generateReportDetailImageTemplate(evidenceImage, title)),
-    '',
+      accumulator.concat(
+        generateReportDetailImageTemplate(evidenceImage, title)
+      ),
+    ""
   );
 
   return `

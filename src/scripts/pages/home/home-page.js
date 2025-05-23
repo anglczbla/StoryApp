@@ -20,7 +20,7 @@ export default class HomePage {
       </section>
 
       <section class="container">
-        <h1 class="section-title">Daftar Laporan Kerusakan</h1>
+        <h1 class="section-title">Daftar Cerita Pengguna</h1>
 
         <div class="reports-list__container">
           <div id="reports-list"></div>
@@ -39,17 +39,21 @@ export default class HomePage {
     await this.#presenter.initialGalleryAndMap();
   }
 
-  populateReportsList(message, reports) {
-    if (reports.length <= 0) {
+  populateReportsList(message, stories) {
+    if (stories.length <= 0) {
       this.populateReportsListEmpty();
       return;
     }
 
-    const html = reports.reduce((accumulator, report) => {
+    const html = stories.reduce((accumulator, story) => {
       return accumulator.concat(
         generateReportItemTemplate({
-          ...report,
-          reporterName: report.reporter.name,
+          id: story.id,
+          description: story.description,
+          photoUrl: story.photoUrl,
+          lat: story.lat,
+          lon: story.lon,
+          reporterName: story.name,
         }),
       );
     }, '');
