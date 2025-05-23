@@ -9,9 +9,26 @@ const ENDPOINTS = {
   ALL_STORIES: `${BASE_URL}/stories`,
   STORY_DETAIL: (id) => `${BASE_URL}/stories/${id}`,
   ADD_NEW_STORY: `${BASE_URL}/stories`,
-  MY_USER_INFO: `${BASE_URL}/users/me`,
+ 
+  // Report
+  REPORT_LIST: `${BASE_URL}/reports`,
+  REPORT_DETAIL: (id) => `${BASE_URL}/reports/${id}`,
+  STORE_NEW_REPORT: `${BASE_URL}/reports`,
 
+  // Report Comment
+  REPORT_COMMENTS_LIST: (reportId) => `${BASE_URL}/reports/${reportId}/comments`,
+  STORE_NEW_REPORT_COMMENT: (reportId) => `${BASE_URL}/reports/${reportId}/comments`,
+
+  // Report Comment
+  SUBSCRIBE: `${BASE_URL}/notifications/subscribe`,
+  UNSUBSCRIBE: `${BASE_URL}/notifications/subscribe`,
+  SEND_REPORT_TO_ME: (reportId) => `${BASE_URL}/reports/${reportId}/notify-me`,
+  SEND_REPORT_TO_USER: (reportId) => `${BASE_URL}/reports/${reportId}/notify`,
+  SEND_REPORT_TO_ALL_USER: (reportId) => `${BASE_URL}/reports/${reportId}/notify-all`,
+  SEND_COMMENT_TO_REPORT_OWNER: (reportId, commentId) =>
+    `${BASE_URL}/reports/${reportId}/comments/${commentId}/notify`,
 };
+
 
 export async function getRegistered({ name, email, password }) {
   const data = JSON.stringify({ name, email, password });
@@ -159,4 +176,36 @@ export async function storeNewStory({ description, photo, lat, lon }) {
   });
   const json = await response.json();
   return { ...json, ok: response.ok };
+}
+// Ambil detail laporan
+export async function getReportById(reportId) {
+  const accessToken = getAccessToken();
+  const response = await fetch(`${BASE_URL}/stories/${reportId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const json = await response.json();
+  return { data: json.story, ok: response.ok };
+}
+
+// Ambil semua komentar berdasarkan ID laporan
+export async function getAllCommentsByReportId(reportId) {
+  // Anda bisa mengganti ini dengan endpoint API komentar asli jika ada
+  const response = await fetch(`https://example.com/comments?reportId=${reportId}`);
+  const json = await response.json();
+  return { data: json.comments || [], ok: response.ok };
+}
+
+// Kirim komentar baru
+export async function storeNewCommentByReportId(reportId, comment) {
+  // Anda bisa mengganti ini dengan endpoint API komentar asli jika tersedia
+  const response = await fetch(`https://example.com/comments?reportId=${reportId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(comment),
+  });
+  return { ok: response.ok };
 }

@@ -214,14 +214,14 @@ export function generateReportDetailTemplate({
   description,
   damageLevel,
   evidenceImages,
-  latitudeLocation,
-  longitudeLocation,
-  reporterName,
+  lat,
+  lon,
+  author,
   createdAt,
 }) {
   const createdAtFormatted = showFormattedDate(createdAt, "id-ID");
   const damageLevelBadge = generateDamageLevelBadge(damageLevel);
-  const imagesHtml = evidenceImages.reduce(
+  const imagesHtml = (evidenceImages || []).reduce(
     (accumulator, evidenceImage) =>
       accumulator.concat(
         generateReportDetailImageTemplate(evidenceImage, title)
@@ -235,13 +235,15 @@ export function generateReportDetailTemplate({
 
       <div class="report-detail__more-info">
         <div class="report-detail__more-info__inline">
-          <div id="createdat" class="report-detail__createdat" data-value="${createdAtFormatted}"><i class="fas fa-calendar-alt"></i></div>
+          <div id="createdat" class="report-detail__createdat" data-value="${createdAtFormatted}">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
         </div>
         <div class="report-detail__more-info__inline">
-          <div id="location-latitude" class="report-detail__location__latitude" data-value="${latitudeLocation}">Latitude:</div>
-          <div id="location-longitude" class="report-detail__location__longitude" data-value="${longitudeLocation}">Longitude:</div>
+          <div id="location-latitude" class="report-detail__location__latitude" data-value="${lat}">Latitude:</div>
+          <div id="location-longitude" class="report-detail__location__longitude" data-value="${lon}">Longitude:</div>
         </div>
-        <div id="author" class="report-detail__author" data-value="${reporterName}">Dilaporkan oleh:</div>
+        <div id="author" class="report-detail__author" data-value="${author}">Dilaporkan oleh:</div>
       </div>
 
       <div id="damage-level" class="report-detail__damage-level">
