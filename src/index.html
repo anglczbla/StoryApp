@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
@@ -25,6 +25,18 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
   </head>
   <body>
     <header>
@@ -32,7 +44,11 @@
 
       <div class="header-content container">
         <a class="brand-name__link" href="#/">
-          <img class="brand-name__link__image" src="images/logo.png" alt="CityCare Logo" />
+          <img
+            class="brand-name__link__image"
+            src="images/logo.png"
+            alt="CityCare Logo"
+          />
           <span class="brand-name__link__text">CityCare App</span>
         </a>
 
@@ -52,7 +68,11 @@
         <hr />
         <div class="footer-content">
           <a class="brand-name__link" href="#/">
-            <img class="brand-name__link__image" src="images/logo.png" alt="CityCare Logo" />
+            <img
+              class="brand-name__link__image"
+              src="images/logo.png"
+              alt="CityCare Logo"
+            />
             <span class="brand-name__link__text">CityCare App</span>
           </a>
           <p class="copyright">&copy; 2025 Dicoding. All rights reserved.</p>

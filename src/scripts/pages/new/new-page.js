@@ -161,6 +161,16 @@ export default class NewPage {
 
     this.#presenter.showNewFormMap();
     this.#setupForm();
+
+    var map = L.map("map").setView([-2.972545, 104.774436], 20);
+
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map);
+
+      var marker = L.marker([-2.972545, 104.774436]).addTo(map);
   }
 
   #setupForm() {
