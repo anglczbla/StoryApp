@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>CityCare App</title>
 
     <link rel="shortcut icon" href="favicon.png" />
@@ -25,6 +24,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+
+    <!-- Leaflet CSS -->
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -37,7 +38,13 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
+    <style>
+      #map {
+        height: 400px;
+      }
+    </style>
   </head>
+
   <body>
     <header>
       <button id="skip-link" class="skip-link">Menuju konten utama</button>
@@ -61,7 +68,9 @@
       </div>
     </header>
 
-    <main tabIndex="-1" id="main-content" class="main-content"></main>
+    <main tabIndex="-1" id="main-content" class="main-content">
+      <div id="map"></div>
+    </main>
 
     <footer>
       <div class="container">
@@ -79,5 +88,27 @@
         </div>
       </div>
     </footer>
+
+    <div id="map"></div>
+
+    <script>
+      var map = L.map("map", {
+        dragging: false
+      }).setView([-2.972545, 104.774436], 20);
+
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map);
+
+       var marker = L.marker([-2.972545, 104.774436]).addTo(map);
+
+        map.on('click', function(mouseEvent) {
+        map.removeLayer(marker)
+        marker = L.marker(mouseEvent.latlng).addTo(map);
+        })
+
+    </script>
   </body>
 </html>
