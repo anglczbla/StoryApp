@@ -1,6 +1,7 @@
 import { getAccessToken } from '../utils/auth';
 import { BASE_URL } from '../config';
 
+
 const ENDPOINTS = {
   // Auth
   REGISTER: `${BASE_URL}/register`,
@@ -70,20 +71,22 @@ export async function storeNewReport({
   latitude,
   longitude,
 }) {
-  const formData = new FormData();
-  formData.append("title", title);
-  formData.append("damageLevel", damageLevel);
-  formData.append("description", description);
-  formData.append("latitude", latitude);
-  formData.append("longitude", longitude);
+  const token = getAccessToken(); // ✅ Ambil token
 
+  const formData = new FormData();
+  formData.append("description", description);
+  if (latitude) formData.append("lat", latitude);
+  if (longitude) formData.append("lon", longitude);
   evidenceImages.forEach((image, index) => {
-    formData.append("evidenceImages", image, `image${index}.png`); // sesuaikan nama field di backend
+    formData.append("photo", image, `image${index}.png`);
   });
 
   try {
     const response = await fetch(`${BASE_URL}/stories`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`, // ✅ Kirim token di header
+      },
       body: formData,
     });
 
@@ -98,7 +101,7 @@ export async function storeNewReport({
 
     return {
       ok: true,
-      mesage: responseData.message || "Sukses",
+      message: responseData.message || "Sukses",
       data: responseData.data || null,
     };
   } catch (error) {
@@ -108,7 +111,6 @@ export async function storeNewReport({
     };
   }
 }
-
 export async function registerUser({ name, email, password }) {
   const response = await fetch(ENDPOINTS.REGISTER, {
     method: "POST",
