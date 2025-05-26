@@ -19,33 +19,34 @@ export default class ReportDetailPage {
 
   async render() {
     return `
-        <section>
-          <div class="report-detail__container">
-            <div id="report-detail" class="report-detail"></div>
-            <div id="report-detail-loading-container"></div>
+      <section>
+        <div class="report-detail__container">
+          <div id="report-detail" class="report-detail"></div>
+          <div id="report-detail-loading-container"></div>
+           <div id="map" style="height: 400px;"></div>
+        </div>
+      </section>
+
+      <section class="container">
+        <hr>
+        <div class="report-detail__comments__container">
+          <div class="report-detail__comments-form__container">
+            <h2 class="report-detail__comments-form__title">Beri Tanggapan</h2>
+            <form id="comments-list-form" class="report-detail__comments-form__form">
+              <textarea name="body" placeholder="Beri tanggapan terkait laporan."></textarea>
+              <div id="submit-button-container">
+                <button class="btn" type="submit">Tanggapi</button>
+              </div>
+            </form>
           </div>
-        </section>
-        
-        <section class="container">
           <hr>
-          <div class="report-detail__comments__container">
-            <div class="report-detail__comments-form__container">
-              <h2 class="report-detail__comments-form__title">Beri Tanggapan</h2>
-              <form id="comments-list-form" class="report-detail__comments-form__form">
-                <textarea name="body" placeholder="Beri tanggapan terkait laporan."></textarea>
-                <div id="submit-button-container">
-                  <button class="btn" type="submit">Tanggapi</button>
-                </div>
-              </form>
-            </div>
-            <hr>
-            <div class="report-detail__comments-list__container">
-              <div id="report-detail-comments-list"></div>
-              <div id="comments-list-loading-container"></div>
-            </div>
+          <div class="report-detail__comments-list__container">
+            <div id="report-detail-comments-list"></div>
+            <div id="comments-list-loading-container"></div>
           </div>
-        </section>
-      `;
+        </div>
+      </section>
+    `;
   }
 
   async afterRender() {
@@ -69,19 +70,40 @@ export default class ReportDetailPage {
         evidenceImages: report.evidenceImages,
         latitudeLocation: report.lat,
         longitudeLocation: report.lon,
-        reporterName: (report.reporter && report.reporter.name) ? report.reporter.name : 'Anonim',
+        reporterName:
+          report.reporter && report.reporter.name
+            ? report.reporter.name
+            : "Anonim",
         createdAt: report.createdAt,
       });
 
-    // Carousel images
+    // Tampilkan carousel jika ada gambar
     createCarousel(document.getElementById("images"));
 
-    // Map
-    await this.#presenter.showReportDetailMap();
+    // Inisialisasi map
+    await this.initialMap(report.lat, report.lon);
 
-    // Actions buttons
+    // Tampilkan tombol aksi
     this.#presenter.showSaveButton();
     this.addNotifyMeEventListener();
+  }
+
+  async initialMap(lat, lon) {
+    const map = L.map("map").setView([lat, lon], 18);
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    const marker = L.marker([lat, lon]).addTo(map);
+
+    map.on("click", function (mouseEvent) {
+      const { lat, lng } = mouseEvent.latlng;
+      marker.setLatLng([lat, lng]);
+      console.log("Lat:", lat, "Lng:", lng);
+    });
   }
 
   populateReportDetailError(message) {
@@ -90,8 +112,7 @@ export default class ReportDetailPage {
   }
 
   populateReportDetailComments(message, comments) {
-    if (comments.length <= 0) {
-      this.populateCommentsListEmpty();
+   if (!Array.isArray(comments) || comments.length <= 0) {
       return;
     }
 
@@ -108,8 +129,8 @@ export default class ReportDetailPage {
     );
 
     document.getElementById("report-detail-comments-list").innerHTML = `
-        <div class="report-detail__comments-list">${html}</div>
-      `;
+      <div class="report-detail__comments-list">${html}</div>
+    `;
   }
 
   populateCommentsListEmpty() {
@@ -120,10 +141,6 @@ export default class ReportDetailPage {
   populateCommentsListError(message) {
     document.getElementById("report-detail-comments-list").innerHTML =
       generateCommentsListErrorTemplate(message);
-  }
-
-  async initialMap() {
-    // TODO: map initialization
   }
 
   #setupForm() {
@@ -140,7 +157,6 @@ export default class ReportDetailPage {
 
   postNewCommentSuccessfully(message) {
     console.log(message);
-
     this.#presenter.getCommentsList();
     this.clearForm();
   }
@@ -171,16 +187,17 @@ export default class ReportDetailPage {
     document
       .getElementById("report-detail-remove")
       .addEventListener("click", async () => {
-        alert("Fitur simpan laporan akan segera hadir!");
+        alert("Fitur hapus laporan akan segera hadir!");
       });
   }
 
   addNotifyMeEventListener() {
-    document
-      .getElementById("report-detail-notify-me")
-      .addEventListener("click", () => {
+    const notifyBtn = document.getElementById("report-detail-notify-me");
+    if (notifyBtn) {
+      notifyBtn.addEventListener("click", () => {
         alert("Fitur notifikasi laporan akan segera hadir!");
       });
+    }
   }
 
   showReportDetailLoading() {
@@ -212,15 +229,15 @@ export default class ReportDetailPage {
 
   showSubmitLoadingButton() {
     document.getElementById("submit-button-container").innerHTML = `
-        <button class="btn" type="submit" disabled>
-          <i class="fas fa-spinner loader-button"></i> Tanggapi
-        </button>
-      `;
+      <button class="btn" type="submit" disabled>
+        <i class="fas fa-spinner loader-button"></i> Tanggapi
+      </button>
+    `;
   }
 
   hideSubmitLoadingButton() {
     document.getElementById("submit-button-container").innerHTML = `
-        <button class="btn" type="submit">Tanggapi</button>
-      `;
+      <button class="btn" type="submit">Tanggapi</button>
+    `;
   }
 }

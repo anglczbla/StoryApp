@@ -3,9 +3,9 @@ import {
   generateReportItemTemplate,
   generateReportsListEmptyTemplate,
   generateReportsListErrorTemplate,
-} from '../../templates';
-import HomePresenter from './home-presenter';
-import * as CityCareAPI from '../../data/api';
+} from "../../templates";
+import HomePresenter from "./home-presenter";
+import * as CityCareAPI from "../../data/api";
 
 export default class HomePage {
   #presenter = null;
@@ -49,26 +49,33 @@ export default class HomePage {
       return accumulator.concat(
         generateReportItemTemplate({
           id: story.id,
+          title: story.title,
           description: story.description,
-          photoUrl: story.photoUrl,
-          lat: story.lat,
-          lon: story.lon,
+          evidenceImages:
+            story.evidenceImages || (story.photoUrl ? [story.photoUrl] : []),
           reporterName: story.name,
-        }),
+          createdAt: story.createdAt,
+          location: {
+            lat: story.lat,
+            lon: story.lon,
+          },
+        })
       );
-    }, '');
+    }, "");
 
-    document.getElementById('reports-list').innerHTML = `
+    document.getElementById("reports-list").innerHTML = `
       <div class="reports-list">${html}</div>
     `;
   }
 
   populateReportsListEmpty() {
-    document.getElementById('reports-list').innerHTML = generateReportsListEmptyTemplate();
+    document.getElementById("reports-list").innerHTML =
+      generateReportsListEmptyTemplate();
   }
 
   populateReportsListError(message) {
-    document.getElementById('reports-list').innerHTML = generateReportsListErrorTemplate(message);
+    document.getElementById("reports-list").innerHTML =
+      generateReportsListErrorTemplate(message);
   }
 
   async initialMap() {
@@ -76,19 +83,20 @@ export default class HomePage {
   }
 
   showMapLoading() {
-    document.getElementById('map-loading-container').innerHTML = generateLoaderAbsoluteTemplate();
+    document.getElementById("map-loading-container").innerHTML =
+      generateLoaderAbsoluteTemplate();
   }
 
   hideMapLoading() {
-    document.getElementById('map-loading-container').innerHTML = '';
+    document.getElementById("map-loading-container").innerHTML = "";
   }
 
   showLoading() {
-    document.getElementById('reports-list-loading-container').innerHTML =
+    document.getElementById("reports-list-loading-container").innerHTML =
       generateLoaderAbsoluteTemplate();
   }
 
   hideLoading() {
-    document.getElementById('reports-list-loading-container').innerHTML = '';
+    document.getElementById("reports-list-loading-container").innerHTML = "";
   }
 }

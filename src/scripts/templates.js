@@ -236,14 +236,14 @@ export function generateReportDetailTemplate({
       <div class="report-detail__more-info">
         <div class="report-detail__more-info__inline">
           <div id="createdat" class="report-detail__createdat" data-value="${createdAtFormatted}">
-            <i class="fas fa-calendar-alt"></i>
+            <i class="fas fa-calendar-alt"></i> ${createdAtFormatted}
           </div>
         </div>
         <div class="report-detail__more-info__inline">
-          <div id="location-latitude" class="report-detail__location__latitude" data-value="${lat}">Latitude:</div>
-          <div id="location-longitude" class="report-detail__location__longitude" data-value="${lon}">Longitude:</div>
+          <div id="location-latitude" class="report-detail__location__latitude" data-value="${lat}">Latitude: ${lat}</div>
+          <div id="location-longitude" class="report-detail__location__longitude" data-value="${lon}">Longitude: ${lon}</div>
         </div>
-        <div id="author" class="report-detail__author" data-value="${author}">Dilaporkan oleh:</div>
+        <div id="author" class="report-detail__author" data-value="${author}">Dilaporkan oleh: ${author}</div>
       </div>
 
       <div id="damage-level" class="report-detail__damage-level">
@@ -265,16 +265,17 @@ export function generateReportDetailTemplate({
             ${description}
           </div>
         </div>
+
         <div class="report-detail__body__map__container">
           <h2 class="report-detail__map__title">Peta Lokasi</h2>
           <div class="report-detail__map__container">
-            <div id="map" class="report-detail__map"></div>
+            <div id="map" class="report-detail__map" style="height: 400px;"></div>
             <div id="map-loading-container"></div>
           </div>
         </div>
-  
+
         <hr>
-  
+
         <div class="report-detail__body__actions__container">
           <h2>Aksi</h2>
           <div class="report-detail__actions__buttons">

@@ -82,7 +82,7 @@ export async function storeNewReport({
   });
 
   try {
-    const response = await fetch("https://example.com/api/reports", {
+    const response = await fetch(`${BASE_URL}/stories`, {
       method: "POST",
       body: formData,
     });
@@ -98,7 +98,7 @@ export async function storeNewReport({
 
     return {
       ok: true,
-      message: responseData.message || "Sukses",
+      mesage: responseData.message || "Sukses",
       data: responseData.data || null,
     };
   } catch (error) {
@@ -189,23 +189,44 @@ export async function getReportById(reportId) {
   return { data: json.story, ok: response.ok };
 }
 
-// Ambil semua komentar berdasarkan ID laporan
-export async function getAllCommentsByReportId(reportId) {
-  // Anda bisa mengganti ini dengan endpoint API komentar asli jika ada
-  const response = await fetch(`https://example.com/comments?reportId=${reportId}`);
-  const json = await response.json();
-  return { data: json.comments || [], ok: response.ok };
-}
+export const getAllCommentsByReportId = async (id) => {
+  try {
+    const response = await fetch(`${BASE_URL}/reports/${id}/comments`);
+    if (!response.ok) {
+      throw new Error("Gagal mengambil komentar");
+    }
+
+    const result = await response.json();
+    return result.data; // Pastikan backend mengembalikan `data`
+  } catch (error) {
+    console.error("getAllCommentsByReportId error:", error);
+    throw error;
+  }
+};
+
 
 // Kirim komentar baru
 export async function storeNewCommentByReportId(reportId, comment) {
-  // Anda bisa mengganti ini dengan endpoint API komentar asli jika tersedia
-  const response = await fetch(`https://example.com/comments?reportId=${reportId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(comment),
-  });
-  return { ok: response.ok };
+  const token = localStorage.getItem('token'); // atau cara lain kamu menyimpan token
+
+  try {
+    const response = await fetch(`https://story-api.dicoding.dev/v1/reports/${reportId}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Wajib ditambahkan
+      },
+      body: JSON.stringify({ comment }), // Komentar harus dalam bentuk objek { comment: "isi" }
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('API Error:', error.message);
+    }
+
+    return { ok: response.ok };
+  } catch (error) {
+    console.error('storeNewCommentByReportId error:', error);
+    return { ok: false, error: error.message };
+  }
 }
