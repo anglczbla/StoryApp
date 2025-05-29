@@ -1,8 +1,8 @@
-import NewPresenter from './new-presenter';
-import { convertBase64ToBlob } from '../../utils';
-import * as CityCareAPI from '../../data/api';
-import { generateLoaderAbsoluteTemplate } from '../../templates';
-import Camera from '../../utils/camera';
+import NewPresenter from "./new-presenter";
+import { convertBase64ToBlob } from "../../utils";
+import * as CityCareAPI from "../../data/api";
+import { generateLoaderAbsoluteTemplate } from "../../templates";
+import Camera from "../../utils/camera";
 
 export default class NewPage {
   #presenter;
@@ -34,7 +34,7 @@ export default class NewPage {
               <div class="new-form__title__container">
                 <input
                   id="title-input"
-                  name="title"
+                  name="name"
                   placeholder="Masukkan judul laporan"
                   aria-describedby="title-input-more-info"
                 >
@@ -135,8 +135,8 @@ export default class NewPage {
                   <div id="map-loading-container"></div>
                 </div>
                 <div class="new-form__location__lat-lng">
-                  <input type="number" name="latitude" value="-6.175389">
-                  <input type="number" name="longitude" value="106.827139">
+                  <input type="number" name="lat" step="any" placeholder="Latitude" required />
+                  <input type="number" name="lon" step="any" placeholder="Longitude" required />
                 </div>
               </div>
             </div>
@@ -153,71 +153,95 @@ export default class NewPage {
   }
 
   async afterRender() {
-    this.#presenter = new NewPresenter({
-      view: this,
-      model: CityCareAPI,
-    });
-    this.#takenDocumentations = [];
+  this.#presenter = new NewPresenter({
+    view: this,
+    model: CityCareAPI,
+  });
+  this.#takenDocumentations = [];
 
-    this.#presenter.showNewFormMap();
-    this.#setupForm();
+  this.#presenter.showNewFormMap();
+  this.#setupForm();
 
-    var map = L.map("map").setView([-2.972545, 104.774436], 20);
+  const initialLatLng = [-2.972545, 104.774436];
+  const map = L.map("map").setView(initialLatLng, 20);
 
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      }).addTo(map);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution:
+      '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  }).addTo(map);
 
-      var marker = L.marker([-2.972545, 104.774436]).addTo(map);
-  }
+  const marker = L.marker(initialLatLng, { draggable: true }).addTo(map);
 
-  #setupForm() {
-    this.#form = document.getElementById('new-form');
-    this.#form.addEventListener('submit', async (event) => {
+  // Saat marker digeser, update input latitude & longitude
+  marker.on("dragend", function (event) {
+    const position = event.target.getLatLng();
+    document.querySelector('input[name="lat"]').value = position.lat;
+    document.querySelector('input[name="lon"]').value = position.lng;
+  });
+
+  // Saat peta diklik, pindahkan marker ke lokasi klik dan update input
+  map.on("click", function (e) {
+    const { lat, lng } = e.latlng;
+    marker.setLatLng([lat, lng]);
+    document.querySelector('input[name="lat"]').value = lat;
+    document.querySelector('input[name="lon"]').value = lng;
+  });
+}
+
+  async #setupForm() {
+    this.#form = document.getElementById("new-form");
+    this.#form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
       const data = {
-        title: this.#form.elements.namedItem('title').value,
-        damageLevel: this.#form.elements.namedItem('damageLevel').value,
-        description: this.#form.elements.namedItem('description').value,
-        evidenceImages: this.#takenDocumentations.map((picture) => picture.blob),
-        latitude: this.#form.elements.namedItem('latitude').value,
-        longitude: this.#form.elements.namedItem('longitude').value,
+        name: this.#form.elements.namedItem("name").value,
+        damageLevel: this.#form.elements.namedItem("damageLevel").value,
+        description: this.#form.elements.namedItem("description").value,
+        evidenceImages: this.#takenDocumentations.map(
+          (picture) => picture.blob
+        ),
+        latitude: this.#form.elements.namedItem("lat").value,
+        longitude: this.#form.elements.namedItem("lon").value,
       };
       await this.#presenter.postNewReport(data);
     });
 
-    document.getElementById('documentations-input').addEventListener('change', async (event) => {
-      const insertingPicturesPromises = Object.values(event.target.files).map(async (file) => {
-        return await this.#addTakenPicture(file);
-      });
-      await Promise.all(insertingPicturesPromises);
-
-      await this.#populateTakenPictures();
-    });
-
-    document.getElementById('documentations-input-button').addEventListener('click', () => {
-      this.#form.elements.namedItem('documentations-input').click();
-    });
-
-    const cameraContainer = document.getElementById('camera-container');
     document
-      .getElementById('open-documentations-camera-button')
-      .addEventListener('click', async (event) => {
-        cameraContainer.classList.toggle('open');
-        this.#isCameraOpen = cameraContainer.classList.contains('open');
+      .getElementById("documentations-input")
+      .addEventListener("change", async (event) => {
+        const insertingPicturesPromises = Object.values(event.target.files).map(
+          async (file) => {
+            return await this.#addTakenPicture(file);
+          }
+        );
+        await Promise.all(insertingPicturesPromises);
+
+        await this.#populateTakenPictures();
+      });
+
+    document
+      .getElementById("documentations-input-button")
+      .addEventListener("click", () => {
+        this.#form.elements.namedItem("documentations-input").click();
+      });
+
+    const cameraContainer = document.getElementById("camera-container");
+    document
+      .getElementById("open-documentations-camera-button")
+      .addEventListener("click", async (event) => {
+        cameraContainer.classList.toggle("open");
+        this.#isCameraOpen = cameraContainer.classList.contains("open");
 
         if (this.#isCameraOpen) {
-          event.currentTarget.textContent = 'Tutup Kamera';
+          event.currentTarget.textContent = "Tutup Kamera";
           this.#setupCamera();
           await this.#camera.launch();
 
           return;
         }
 
-        event.currentTarget.textContent = 'Buka Kamera';
+        event.currentTarget.textContent = "Buka Kamera";
         this.#camera.stop();
       });
   }
@@ -229,13 +253,13 @@ export default class NewPage {
   #setupCamera() {
     if (!this.#camera) {
       this.#camera = new Camera({
-        video: document.getElementById('camera-video'),
-        cameraSelect: document.getElementById('camera-select'),
-        canvas: document.getElementById('camera-canvas'),
+        video: document.getElementById("camera-video"),
+        cameraSelect: document.getElementById("camera-select"),
+        canvas: document.getElementById("camera-canvas"),
       });
     }
 
-    this.#camera.addCheeseButtonListener('#camera-take-button', async () => {
+    this.#camera.addCheeseButtonListener("#camera-take-button", async () => {
       const image = await this.#camera.takePicture();
       await this.#addTakenPicture(image);
       await this.#populateTakenPictures();
@@ -246,43 +270,53 @@ export default class NewPage {
     let blob = image;
 
     if (image instanceof String) {
-      blob = await convertBase64ToBlob(image, 'image/png');
+      blob = await convertBase64ToBlob(image, "image/png");
     }
 
     const newDocumentation = {
       id: `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       blob: blob,
     };
-    this.#takenDocumentations = [...this.#takenDocumentations, newDocumentation];
+    this.#takenDocumentations = [
+      ...this.#takenDocumentations,
+      newDocumentation,
+    ];
   }
 
   async #populateTakenPictures() {
-    const html = this.#takenDocumentations.reduce((accumulator, picture, currentIndex) => {
-      const imageUrl = URL.createObjectURL(picture.blob);
-      return accumulator.concat(`
+    const html = this.#takenDocumentations.reduce(
+      (accumulator, picture, currentIndex) => {
+        const imageUrl = URL.createObjectURL(picture.blob);
+        return accumulator.concat(`
         <li class="new-form__documentations__outputs-item">
-          <button type="button" data-deletepictureid="${picture.id}" class="new-form__documentations__outputs-item__delete-btn">
+          <button type="button" data-deletepictureid="${
+            picture.id
+          }" class="new-form__documentations__outputs-item__delete-btn">
             <img src="${imageUrl}" alt="Dokumentasi ke-${currentIndex + 1}">
           </button>
         </li>
       `);
-    }, '');
-
-    document.getElementById('documentations-taken-list').innerHTML = html;
-
-    document.querySelectorAll('button[data-deletepictureid]').forEach((button) =>
-      button.addEventListener('click', (event) => {
-        const pictureId = event.currentTarget.dataset.deletepictureid;
-
-        const deleted = this.#removePicture(pictureId);
-        if (!deleted) {
-          console.log(`Picture with id ${pictureId} was not found`);
-        }
-
-        // Updating taken pictures
-        this.#populateTakenPictures();
-      }),
+      },
+      ""
     );
+
+    document.getElementById("documentations-taken-list").innerHTML = html;
+
+    document
+      .querySelectorAll("button[data-deletepictureid]")
+      .forEach((button) =>
+        button.addEventListener("click", (event) => {
+          const pictureId = event.currentTarget.dataset.deletepictureid;
+
+          const deleted = this.#removePicture(pictureId);
+          if (!deleted) {
+            console.log(`Picture with id ${pictureId} was not found`);
+          }
+
+          // Updating taken pictures
+          this.#populateTakenPictures();
+        })
+      );
   }
 
   #removePicture(id) {
@@ -308,7 +342,7 @@ export default class NewPage {
     this.clearForm();
 
     // Redirect page
-    location.hash = '/';
+    location.hash = "/";
   }
 
   storeFailed(message) {
@@ -320,15 +354,16 @@ export default class NewPage {
   }
 
   showMapLoading() {
-    document.getElementById('map-loading-container').innerHTML = generateLoaderAbsoluteTemplate();
+    document.getElementById("map-loading-container").innerHTML =
+      generateLoaderAbsoluteTemplate();
   }
 
   hideMapLoading() {
-    document.getElementById('map-loading-container').innerHTML = '';
+    document.getElementById("map-loading-container").innerHTML = "";
   }
 
   showSubmitLoadingButton() {
-    document.getElementById('submit-button-container').innerHTML = `
+    document.getElementById("submit-button-container").innerHTML = `
       <button class="btn" type="submit" disabled>
         <i class="fas fa-spinner loader-button"></i> Buat Laporan
       </button>
@@ -336,7 +371,7 @@ export default class NewPage {
   }
 
   hideSubmitLoadingButton() {
-    document.getElementById('submit-button-container').innerHTML = `
+    document.getElementById("submit-button-container").innerHTML = `
       <button class="btn" type="submit">Buat Laporan</button>
     `;
   }

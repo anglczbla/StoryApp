@@ -88,7 +88,7 @@ export function generateCommentsListErrorTemplate(message) {
 
 export function generateReportItemTemplate({
   id,
-  title,
+  name,
   description,
   evidenceImages = [], // default ke array kosong
   reporterName,
@@ -112,10 +112,10 @@ export function generateReportItemTemplate({
 
   return `
     <div tabindex="0" class="report-item" data-reportid="${id}">
-      <img class="report-item__image" src="${firstImage}" alt="${title}">
+      <img class="report-item__image" src="${firstImage}" alt="${name}">
       <div class="report-item__body">
         <div class="report-item__main">
-          <h2 id="report-title" class="report-item__title">${title}</h2>
+          <h2 id="report-title" class="report-item__title">${name}</h2>
           <div class="report-item__more-info">
             <div class="report-item__createdat">
               <i class="fas fa-calendar-alt"></i> ${formattedDate}
@@ -210,7 +210,7 @@ export function generateReportCommentItemTemplate({
 }
 
 export function generateReportDetailTemplate({
-  title,
+  name,
   description,
   damageLevel,
   evidenceImages,
@@ -224,14 +224,14 @@ export function generateReportDetailTemplate({
   const imagesHtml = (evidenceImages || []).reduce(
     (accumulator, evidenceImage) =>
       accumulator.concat(
-        generateReportDetailImageTemplate(evidenceImage, title)
+        generateReportDetailImageTemplate(evidenceImage, name)
       ),
     ""
   );
 
   return `
     <div class="report-detail__header">
-      <h1 id="title" class="report-detail__title">${title}</h1>
+      <h1 id="title" class="report-detail__title">${name}</h1>
 
       <div class="report-detail__more-info">
         <div class="report-detail__more-info__inline">

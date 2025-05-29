@@ -49,7 +49,7 @@ export default class HomePage {
       return accumulator.concat(
         generateReportItemTemplate({
           id: story.id,
-          title: story.title,
+          name: story.name,
           description: story.description,
           evidenceImages:
             story.evidenceImages || (story.photoUrl ? [story.photoUrl] : []),

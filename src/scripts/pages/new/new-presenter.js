@@ -18,13 +18,13 @@ export default class NewPresenter {
     }
   }
 
-  async postNewReport({ title, damageLevel, description, evidenceImages, latitude, longitude }) {
+  async postNewReport({ name, damageLevel, description, evidenceImages, latitude, longitude }) {
     this.#view.showSubmitLoadingButton();
 
     try {
       // Data yang dikirim ke model harus sesuai API
       const data = {
-        title,
+        name,
         damageLevel,
         description,
         evidenceImages, // ini array Blob/File
