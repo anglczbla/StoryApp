@@ -1,6 +1,5 @@
-import { getAccessToken } from '../utils/auth';
-import { BASE_URL } from '../config';
-
+import { getAccessToken } from "../utils/auth";
+import { BASE_URL } from "../config";
 
 const ENDPOINTS = {
   // Auth
@@ -10,33 +9,35 @@ const ENDPOINTS = {
   ALL_STORIES: `${BASE_URL}/stories`,
   STORY_DETAIL: (id) => `${BASE_URL}/stories/${id}`,
   ADD_NEW_STORY: `${BASE_URL}/stories`,
- 
+
   // Report
   REPORT_LIST: `${BASE_URL}/reports`,
   REPORT_DETAIL: (id) => `${BASE_URL}/reports/${id}`,
   STORE_NEW_REPORT: `${BASE_URL}/reports`,
 
   // Report Comment
-  REPORT_COMMENTS_LIST: (reportId) => `${BASE_URL}/reports/${reportId}/comments`,
-  STORE_NEW_REPORT_COMMENT: (reportId) => `${BASE_URL}/reports/${reportId}/comments`,
+  REPORT_COMMENTS_LIST: (reportId) =>
+    `${BASE_URL}/reports/${reportId}/comments`,
+  STORE_NEW_REPORT_COMMENT: (reportId) =>
+    `${BASE_URL}/reports/${reportId}/comments`,
 
   // Report Comment
   SUBSCRIBE: `${BASE_URL}/notifications/subscribe`,
   UNSUBSCRIBE: `${BASE_URL}/notifications/subscribe`,
   SEND_REPORT_TO_ME: (reportId) => `${BASE_URL}/reports/${reportId}/notify-me`,
   SEND_REPORT_TO_USER: (reportId) => `${BASE_URL}/reports/${reportId}/notify`,
-  SEND_REPORT_TO_ALL_USER: (reportId) => `${BASE_URL}/reports/${reportId}/notify-all`,
+  SEND_REPORT_TO_ALL_USER: (reportId) =>
+    `${BASE_URL}/reports/${reportId}/notify-all`,
   SEND_COMMENT_TO_REPORT_OWNER: (reportId, commentId) =>
     `${BASE_URL}/reports/${reportId}/comments/${commentId}/notify`,
 };
-
 
 export async function getRegistered({ name, email, password }) {
   const data = JSON.stringify({ name, email, password });
 
   const fetchResponse = await fetch(ENDPOINTS.REGISTER, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: data,
   });
   const json = await fetchResponse.json();
@@ -51,8 +52,8 @@ export async function getLogin({ email, password }) {
   const data = JSON.stringify({ email, password });
 
   const fetchResponse = await fetch(ENDPOINTS.LOGIN, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: data,
   });
   const json = await fetchResponse.json();
@@ -77,7 +78,18 @@ export async function storeNewReport({
   formData.append("description", description);
   if (latitude) formData.append("lat", latitude);
   if (longitude) formData.append("lon", longitude);
+  console.log(
+    "api.js",
+    title,
+    damageLevel,
+    description,
+    evidenceImages,
+    latitude,
+    longitude
+  );
+
   evidenceImages.forEach((image, index) => {
+    console.log(image, index);
     formData.append("photo", image, `image${index}.png`);
   });
 
@@ -206,29 +218,31 @@ export const getAllCommentsByReportId = async (id) => {
   }
 };
 
-
 // Kirim komentar baru
 export async function storeNewCommentByReportId(reportId, comment) {
-  const token = localStorage.getItem('token'); // atau cara lain kamu menyimpan token
+  const token = localStorage.getItem("token"); // atau cara lain kamu menyimpan token
 
   try {
-    const response = await fetch(`https://story-api.dicoding.dev/v1/reports/${reportId}/comments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`, // Wajib ditambahkan
-      },
-      body: JSON.stringify({ comment }), // Komentar harus dalam bentuk objek { comment: "isi" }
-    });
+    const response = await fetch(
+      `https://story-api.dicoding.dev/v1/reports/${reportId}/comments`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Wajib ditambahkan
+        },
+        body: JSON.stringify({ comment }), // Komentar harus dalam bentuk objek { comment: "isi" }
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('API Error:', error.message);
+      console.error("API Error:", error.message);
     }
 
     return { ok: response.ok };
   } catch (error) {
-    console.error('storeNewCommentByReportId error:', error);
+    console.error("storeNewCommentByReportId error:", error);
     return { ok: false, error: error.message };
   }
 }

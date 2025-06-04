@@ -6,6 +6,8 @@ import {
 } from "../../templates";
 import HomePresenter from "./home-presenter";
 import * as CityCareAPI from "../../data/api";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 export default class HomePage {
   #presenter = null;
@@ -37,6 +39,9 @@ export default class HomePage {
     });
 
     await this.#presenter.initialGalleryAndMap();
+    const stories = this.#presenter.getStories?.() || []; // fallback empty array
+
+    await this.initialMap(stories);
   }
 
   populateReportsList(message, stories) {
@@ -79,7 +84,22 @@ export default class HomePage {
   }
 
   async initialMap() {
-    // TODO: map initialization
+    const mapContainer = document.getElementById("map");
+
+    // Cegah error: "Map container is already initialized"
+    if (mapContainer._leaflet_id) {
+      mapContainer._leaflet_id = null;
+    }
+
+    const initialLatLng = [-2.972545, 104.774436];
+
+    const map = L.map("map").setView(initialLatLng, 13);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
   }
 
   showMapLoading() {

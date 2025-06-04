@@ -12,38 +12,44 @@ export default class NewPresenter {
     try {
       await this.#view.initialMap();
     } catch (error) {
-      console.error('showNewFormMap: error:', error);
+      console.error("showNewFormMap: error:", error);
     } finally {
       this.#view.hideMapLoading();
     }
   }
 
-  async postNewReport({ name, damageLevel, description, evidenceImages, latitude, longitude }) {
+  async postNewReport({ description, evidenceImages, lat, lon }) {
     this.#view.showSubmitLoadingButton();
 
-    try {
-      // Data yang dikirim ke model harus sesuai API
-      const data = {
-        name,
-        damageLevel,
-        description,
-        evidenceImages, // ini array Blob/File
-        latitude: parseFloat(latitude),  // pastikan tipe data benar
-        longitude: parseFloat(longitude),
-      };
+    console.log(description, evidenceImages, lat, lon)
 
-      const response = await this.#model.storeNewReport(data);
+    try {
+      const formData = new FormData();
+      formData.append("description", description);
+      if (evidenceImages.length) formData.append("photo", evidenceImages[0]);
+      if (lat) formData.append("lat", lat);
+      if (lon) formData.append("lon", lon);
+
+     formData.forEach(value =>
+     {
+      console.log(value)
+     }
+     )
+
+      const response = await this.#model.storeNewReport({description, evidenceImages, lat, lon});
 
       if (!response.ok) {
-        console.error('postNewReport: response error:', response);
-        this.#view.storeFailed(response.message || 'Gagal menyimpan laporan');
+        this.#view.storeFailed(response.message || "Gagal menyimpan laporan");
         return;
       }
-
-      this.#view.storeSuccessfully(response.message || 'Laporan berhasil disimpan', response.data);
+      this.#view.storeSuccessfully(
+        response.message || "Laporan berhasil disimpan",
+        response.data
+      );
     } catch (error) {
-      console.error('postNewReport: error:', error);
-      this.#view.storeFailed(error.message || 'Terjadi kesalahan saat menyimpan laporan');
+      this.#view.storeFailed(
+        error.message || "Terjadi kesalahan saat menyimpan laporan"
+      );
     } finally {
       this.#view.hideSubmitLoadingButton();
     }

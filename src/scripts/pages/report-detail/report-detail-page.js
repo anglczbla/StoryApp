@@ -64,21 +64,17 @@ export default class ReportDetailPage {
   async populateReportDetailAndInitialMap(message, report) {
     document.getElementById("report-detail").innerHTML =
       generateReportDetailTemplate({
-        name: report.mame,
+        name: report.name,
         description: report.description,
-        damageLevel: report.damageLevel,
-        evidenceImages: report.evidenceImages,
-        latitudeLocation: report.lat,
-        longitudeLocation: report.lon,
-        reporterName:
-          report.reporter && report.reporter.name
-            ? report.reporter.name
-            : "Anonim",
+        photoUrl: report.photoUrl,
         createdAt: report.createdAt,
+        lat: report.lat,
+        lon: report.lon,
       });
+    console.log();
 
-    // Tampilkan carousel jika ada gambar
-    createCarousel(document.getElementById("images"));
+    // // Carousel images
+    // createCarousel(document.getElementById("images"));
 
     // Inisialisasi map
     await this.initialMap(report.lat, report.lon);
@@ -97,13 +93,14 @@ export default class ReportDetailPage {
         '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
 
-    const marker = L.marker([lat, lon]).addTo(map);
-
-    map.on("click", function (mouseEvent) {
-      const { lat, lng } = mouseEvent.latlng;
-      marker.setLatLng([lat, lng]);
-      console.log("Lat:", lat, "Lng:", lng);
+    var myIcon = L.icon({
+      iconUrl:
+        "https://toppng.com/uploads/preview/map-marker-icon-600x-map-marker-11562939743ayfahlvygl.png",
+      iconSize: [38, 95],
+      iconAnchor: [22, 94],
     });
+
+    L.marker([lat, lon], { icon: myIcon }).addTo(map);
   }
 
   populateReportDetailError(message) {
@@ -112,7 +109,7 @@ export default class ReportDetailPage {
   }
 
   populateReportDetailComments(message, comments) {
-   if (!Array.isArray(comments) || comments.length <= 0) {
+    if (!Array.isArray(comments) || comments.length <= 0) {
       return;
     }
 

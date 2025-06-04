@@ -92,12 +92,15 @@ export default class App {
     // Get page instance
     const page = route();
 
-    const transition = transitionHelper({
-      updateDOM: async () => {
-        this.#content.innerHTML = await page.render();
-        page.afterRender();
-      },
-    });
+   const transition = transitionHelper({
+  updateDOM: async () => {
+    this.#content.innerHTML = await page.render();
+    
+    if (typeof page.afterRender === 'function') {
+      await page.afterRender(); // jika afterRender async, gunakan await
+    }
+  },
+});
 
     transition.ready.catch(console.error);
     transition.updateCallbackDone.then(() => {

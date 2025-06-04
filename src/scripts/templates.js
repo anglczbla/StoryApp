@@ -212,22 +212,12 @@ export function generateReportCommentItemTemplate({
 export function generateReportDetailTemplate({
   name,
   description,
-  damageLevel,
-  evidenceImages,
+  photoUrl,
+  createdAt,
   lat,
   lon,
-  author,
-  createdAt,
 }) {
   const createdAtFormatted = showFormattedDate(createdAt, "id-ID");
-  const damageLevelBadge = generateDamageLevelBadge(damageLevel);
-  const imagesHtml = (evidenceImages || []).reduce(
-    (accumulator, evidenceImage) =>
-      accumulator.concat(
-        generateReportDetailImageTemplate(evidenceImage, name)
-      ),
-    ""
-  );
 
   return `
     <div class="report-detail__header">
@@ -240,20 +230,21 @@ export function generateReportDetailTemplate({
           </div>
         </div>
         <div class="report-detail__more-info__inline">
-          <div id="location-latitude" class="report-detail__location__latitude" data-value="${lat}">Latitude: ${lat}</div>
-          <div id="location-longitude" class="report-detail__location__longitude" data-value="${lon}">Longitude: ${lon}</div>
+          <div id="location-latitude" class="report-detail__location__latitude" data-value="${lat ?? 'N/A'}">
+            Latitude: ${lat ?? 'Tidak tersedia'}
+          </div>
+          <div id="location-longitude" class="report-detail__location__longitude" data-value="${lon ?? 'N/A'}">
+            Longitude: ${lon ?? 'Tidak tersedia'}
+          </div>
         </div>
-        <div id="author" class="report-detail__author" data-value="${author}">Dilaporkan oleh: ${author}</div>
-      </div>
-
-      <div id="damage-level" class="report-detail__damage-level">
-        ${damageLevelBadge}
       </div>
     </div>
 
     <div class="container">
       <div class="report-detail__images__container">
-        <div id="images" class="report-detail__images">${imagesHtml}</div>
+        <div class="report-detail__images">
+          <img src="${photoUrl}" alt="Foto oleh ${name}" class="report-detail__image" />
+        </div>
       </div>
     </div>
 

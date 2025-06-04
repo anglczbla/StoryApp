@@ -1,11 +1,17 @@
 export default class HomePresenter {
   #view;
   #model;
+  #stories;
 
   constructor({ view, model }) {
     this.#view = view;
     this.#model = model;
   }
+
+  getStories() {
+  return this.#stories || [];
+}
+
 
   async showReportsListMap() {
     this.#view.showMapLoading();
