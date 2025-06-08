@@ -69,23 +69,23 @@ export async function storeNewReport({
   damageLevel,
   description,
   evidenceImages,
-  latitude,
-  longitude,
+  lat,
+  lon,
 }) {
   const token = getAccessToken(); // ✅ Ambil token
 
   const formData = new FormData();
   formData.append("description", description);
-  if (latitude) formData.append("lat", latitude);
-  if (longitude) formData.append("lon", longitude);
+  if (lat) formData.append("lat", lat);
+  if (lon) formData.append("lon", lon);
   console.log(
     "api.js",
     title,
     damageLevel,
     description,
     evidenceImages,
-    latitude,
-    longitude
+    lat,
+    lon
   );
 
   evidenceImages.forEach((image, index) => {
