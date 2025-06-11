@@ -71,26 +71,22 @@ export default class ReportDetailPage {
         lat: report.lat,
         lon: report.lon,
       });
-    console.log();
-
-    // // Carousel images
-    // createCarousel(document.getElementById("images"));
 
     // Inisialisasi map
-    await this.initialMap(report.lat, report.lon);
+    await this.initialMap(report.lat, report.lon, report.name, report.description);
 
     // Tampilkan tombol aksi
     this.#presenter.showSaveButton();
     this.addNotifyMeEventListener();
   }
 
-  async initialMap(lat, lon) {
+  async initialMap(lat, lon, name, description) {
     const map = L.map("map").setView([lat, lon], 18);
 
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
       attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
 
     var myIcon = L.icon({
@@ -100,7 +96,15 @@ export default class ReportDetailPage {
       iconAnchor: [22, 94],
     });
 
-    L.marker([lat, lon], { icon: myIcon }).addTo(map);
+    const marker = L.marker([lat, lon], { icon: myIcon }).addTo(map);
+    
+    // Add popup with report details
+    marker.bindPopup(`
+      <div style="max-width: 200px;">
+        <h3 style="margin: 0 0 8px 0; font-size: 16px;">${name}</h3>
+        <p style="margin: 0; font-size: 14px;">${description}</p>
+      </div>
+    `).openPopup();
   }
 
   populateReportDetailError(message) {
